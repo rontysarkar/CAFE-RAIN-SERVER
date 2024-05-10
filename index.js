@@ -37,7 +37,12 @@ const client = new MongoClient(uri, {
         const foodsCollections = client.db('cafeRainDB').collection('foodsItems');
 
         app.get('/foods',async(req,res)=>{
-            const result =await foodsCollections.find().toArray()
+            const {food_name} = req.query
+            const query = {}
+            if(food_name){
+              query.food_name = { $regex : food_name,$options:'i'};
+            }
+            const result =await foodsCollections.find(query).toArray()
             res.send(result)
         })
 
