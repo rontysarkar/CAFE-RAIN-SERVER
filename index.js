@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors')
 require ('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dam4d01.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 const app = express()
@@ -35,6 +35,7 @@ const client = new MongoClient(uri, {
       // Connect the client to the server	(optional starting in v4.7)
     //   await client.connect();
         const foodsCollections = client.db('cafeRainDB').collection('foodsItems');
+        const purchaseCollections = client.db('cafeRainDB').collection('purchaseItems')
 
         app.get('/foods',async(req,res)=>{
             const {food_name} = req.query
@@ -44,6 +45,24 @@ const client = new MongoClient(uri, {
             }
             const result =await foodsCollections.find(query).toArray()
             res.send(result)
+        })
+
+        // single foods 
+        app.get('/foods/:id',async(req,res)=>{
+           const query = {_id: new ObjectId(req.params.id)}
+           const result = await foodsCollections.findOne(query)
+           res.send(result)
+        })
+
+        // purchase items
+        app.post('/purchaseFoods',async(req,res)=>{
+          const data = req.body
+          console.log(data)
+          const doc = {
+            ...data
+          }
+          const result = await purchaseCollections.insertOne(doc);
+          res.send(result)
         })
 
 
