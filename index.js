@@ -37,6 +37,7 @@ const client = new MongoClient(uri, {
         const foodsCollections = client.db('cafeRainDB').collection('foodsItems');
         const purchaseCollections = client.db('cafeRainDB').collection('purchaseItems');
         const galleryCollections = client.db('cafeRainDB').collection('gallery');
+        const usersCollections = client.db('cafeRainDB').collection('users');
 
         app.get('/foods',async(req,res)=>{
             const {food_name} = req.query
@@ -79,6 +80,18 @@ const client = new MongoClient(uri, {
             ...item
           }
           const result = await galleryCollections.insertOne(doc);
+          res.send(result)
+        })
+
+        // add user collection
+        app.post('/users',async(req,res)=>{
+          const user = req.body;
+          const doc = {
+            name:user.name,
+            email:user.email,
+            image :user.image
+          }
+          const result = await usersCollections.insertOne(doc)
           res.send(result)
         })
 
