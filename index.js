@@ -38,15 +38,43 @@ const client = new MongoClient(uri, {
         const purchaseCollections = client.db('cafeRainDB').collection('purchaseItems');
         const galleryCollections = client.db('cafeRainDB').collection('gallery');
         const usersCollections = client.db('cafeRainDB').collection('users');
-
+      // foods 
+        app.post('/foods',async(req,res)=>{
+          const data = req.body
+          const doc = {
+            ...data
+          }
+          const result =await foodsCollections.insertOne(doc);
+          res.send(result)
+        })
         app.get('/foods',async(req,res)=>{
-            const {food_name} = req.query
+            const {food_name,name,email} = req.query
+
+            
             const query = {}
             if(food_name){
               query.food_name = { $regex : food_name,$options:'i'};
             }
+            if(email){
+              query.added_by = {name:name,email:email}
+            }
+            
             const result =await foodsCollections.find(query).toArray()
             res.send(result)
+        })
+
+        app.put('/foods/:id',async(req,res)=>{
+          const data = req.body
+          const id = req.params.id
+          const query = {_id: new ObjectId(id)}
+          
+          const doc = {
+            $set:{
+              ...data
+            }
+          }
+          const result = await foodsCollections.updateOne(query,doc)
+          res.send(result)
         })
 
         // single foods 
