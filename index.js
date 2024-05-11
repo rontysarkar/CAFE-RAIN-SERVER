@@ -73,6 +73,15 @@ const client = new MongoClient(uri, {
           res.send(result)
         })
 
+        app.post('/gallery', async(req,res)=>{
+          const item = req.body
+          const doc = {
+            ...item
+          }
+          const result = await galleryCollections.insertOne(doc);
+          res.send(result)
+        })
+
 
 
 
