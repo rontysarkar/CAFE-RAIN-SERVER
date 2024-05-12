@@ -95,6 +95,16 @@ const client = new MongoClient(uri, {
           res.send(result)
         })
 
+        app.get('/purchaseFoods',async(req,res)=>{
+          const {email} = req.query
+          const query = {}
+          if(email){
+            query.buyer_Email = email
+          }
+          const result = await purchaseCollections.find(query).toArray()
+          res.send(result)
+        })
+
         // gallery page
 
         app.get('/gallery',async(req,res)=>{
