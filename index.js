@@ -105,6 +105,13 @@ const client = new MongoClient(uri, {
           res.send(result)
         })
 
+        app.delete('/purchaseFoods/:id',async(req,res)=>{
+          const id = req.params.id
+          const query = {_id : new ObjectId(id)}
+          const result = await purchaseCollections.deleteOne(query)
+          res.send(result)
+        })
+
         // gallery page
 
         app.get('/gallery',async(req,res)=>{
