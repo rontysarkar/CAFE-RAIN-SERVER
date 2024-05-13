@@ -63,6 +63,11 @@ const client = new MongoClient(uri, {
             res.send(result)
         })
 
+        app.get('/sortFoods',async(req,res)=>{
+           const result = await foodsCollections.find().sort({purchase_count:-1}).toArray()
+           res.send(result)
+        })
+
         app.put('/foods/:id',async(req,res)=>{
           const data = req.body
           const id = req.params.id
@@ -78,12 +83,13 @@ const client = new MongoClient(uri, {
         })
 
         app.patch('/foods/:id',async(req,res)=>{
-          const data = req.body;
           const id = req.params.id
+          const data = req.body
+          
           // console.log("daa = ",data.quantity,'id : ', id)
           const query = {_id : new ObjectId(id)}
           const doc = {
-            $inc:{ purchase_count : data.quantity}
+            $inc:{ purchase_count : 1 ,quantity : - data.quantity }
           }
           const result = await foodsCollections.updateOne(query,doc)
           res.send(result)
