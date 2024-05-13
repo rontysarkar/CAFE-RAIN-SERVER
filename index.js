@@ -77,6 +77,18 @@ const client = new MongoClient(uri, {
           res.send(result)
         })
 
+        app.patch('/foods/:id',async(req,res)=>{
+          const data = req.body;
+          const id = req.params.id
+          // console.log("daa = ",data.quantity,'id : ', id)
+          const query = {_id : new ObjectId(id)}
+          const doc = {
+            $inc:{ purchase_count : data.quantity}
+          }
+          const result = await foodsCollections.updateOne(query,doc)
+          res.send(result)
+        })
+
         // single foods 
         app.get('/foods/:id',async(req,res)=>{
            const query = {_id: new ObjectId(req.params.id)}
@@ -87,7 +99,6 @@ const client = new MongoClient(uri, {
         // purchase items
         app.post('/purchaseFoods',async(req,res)=>{
           const data = req.body
-          console.log(data)
           const doc = {
             ...data
           }
