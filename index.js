@@ -107,15 +107,19 @@ async function run() {
       const result = await foodsCollections.find(query).toArray()
       res.send(result)
     })
+    
+    
 
 
-    app.get("/foods", verifyToken, async (req, res) => {
+    app.get("/foods",  async (req, res) => {
       const { food_name, name, email } = req.query;
-      const tokenEmail = req.user.email
+      // const tokenEmail = req.user.email
 
-      if(tokenEmail !== email){
-       return res.status(403).send({message : 'Forbidden access'})
-      }
+      // if(tokenEmail !== email){
+      //  return res.status(403).send({message : 'Forbidden access'})
+      // }
+      console.log(name ,email)
+
       const query = {};
       if (food_name) {
         query.food_name = { $regex: food_name, $options: "i" };
@@ -169,6 +173,11 @@ async function run() {
       const result = await foodsCollections.findOne(query);
       res.send(result);
     });
+    app.delete("/foods/:id", async (req, res) => {
+      const query = { _id: new ObjectId(req.params.id) };
+      const result = await foodsCollections.deleteOne(query);
+      res.send(result);
+    });
 
     // purchase items
     app.post("/purchaseFoods", async (req, res) => {
@@ -180,12 +189,12 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/purchaseFoods",verifyToken, async (req, res) => {
+    app.get("/purchaseFoods", async (req, res) => {
       const { email } = req.query;
-      const tokenEmail = req.user.email
-      if(tokenEmail !== email){
-        return res.status(403).send({message:"Forbidden Access"})
-      }
+      // const tokenEmail = req.user.email
+      // if(tokenEmail !== email){
+      //   return res.status(403).send({message:"Forbidden Access"})
+      // }
       const query = {};
       if (email) {
         query.buyer_Email = email;
@@ -228,6 +237,32 @@ async function run() {
       const result = await usersCollections.insertOne(doc);
       res.send(result);
     });
+
+
+    // admin 
+    app.get('/users/admin/:email',async(req,res)=>{
+      const email = req.params.email
+      
+      const query = {email:email}
+      const admin = await usersCollections.findOne(query)
+      let isAdmin = false;
+      if(admin){
+        isAdmin = 'admin' === admin.role
+      }
+      res.send({isAdmin})
+  })
+
+  app.get("/users",  async (req, res) => {
+    const result = await usersCollections.find().toArray();
+    res.send(result);
+  });
+
+  app.delete("/users/:id", async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) };
+    const result = await usersCollections.deleteOne(query);
+    res.send(result);
+  });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
